@@ -10,6 +10,6 @@ export const store = configureStore({
     placeMarks: placeMarkSlice,
     postMarks: postMarkSlice,
     reviews: reviewSlice,
-
+    
   }
 })

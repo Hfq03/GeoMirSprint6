@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { useContext } from 'react';
 import { useForm } from '../../hooks/useForm';
 import { UserContext } from '../../userContext';
-import { ReviewsContext } from './reviewsContext'
+import { ReviewsContext } from './reviewsContext';
+import { addReview } from "../../slices/reviews/thunks";
 
 export const ReviewAdd = ({ id }) => {
 
@@ -13,8 +14,6 @@ export const ReviewAdd = ({ id }) => {
    
    const {formState, onInputChange, onResetForm } = useForm({ review: "" })
    const { review } = formState
-
-
 
    const addReview= async ()=> {
 

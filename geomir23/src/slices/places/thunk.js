@@ -1,9 +1,9 @@
-import { setAdd, setError, setPosts, setPostsCount, startLoadingPosts } from "./reviewSlice";
+import { setAdd, setError, setPlace, setPlaceCount, startLoadingPlace } from "./placeSlice";
 
-export const getPlace = (page = 0, id, authToken, usuari="") => {
+export const getPlaces = (page = 0, id, authToken, usuari="") => {
     return async (dispatch, getState) => {
 
-        dispatch(startLoadingReviews());
+        dispatch(startLoadingPlace());
 
         const headers = {
             headers: {
@@ -13,14 +13,14 @@ export const getPlace = (page = 0, id, authToken, usuari="") => {
             },
             method: "GET",
         };
-        const url = "https://backend.insjoaquimmir.cat/api/places/" + id + "/reviews"
+        const url = "https://backend.insjoaquimmir.cat/api/places/" + id
 
         const data = await fetch(url,  headers  );
         const resposta = await data.json();
 
         if (resposta.success == true) 
         {
-            dispatch(setReviews(resposta.data));
+            dispatch(setPlace(resposta.data));
         }
         else {
             dispatch (setError(resposta.message));
@@ -29,22 +29,20 @@ export const getPlace = (page = 0, id, authToken, usuari="") => {
         resposta.data.map((v) => {
             if (v.user.email === usuari) {
                 dispatch (setAdd(false));
-                console.log("Te review");
+                console.log("Te place");
             }
         });
        
 };
 }
 
-export const delPlace = (review, authToken) => {
+export const deletePlace = (place, authToken) => {
     return async (dispatch, getState) => {
 
 
         const data = await fetch(
             "https://backend.insjoaquimmir.cat/api/places/" +
-              review.place.id +
-              "/reviews/" +
-              review.id,
+              place.id +
               {
                 headers: {
                   Accept: "application/json",
@@ -60,9 +58,9 @@ export const delPlace = (review, authToken) => {
           if (resposta.success == true) {
             dispatch (setAdd(true));
             // usuari no l'indiquem i per defecta estarà a ""
-            dispatch (getReviews(0,review.place.id,authToken))
+            dispatch (getPlaces(0,place.id,authToken))
             const state = getState()
-            dispatch (setReviewsCount(state.reviewsCount - 1));
+            dispatch (setPlaceCount(state.placeCount - 1));
           }
 
 
@@ -72,8 +70,7 @@ export const addPlace = (authToken, formData, id) => {
     return async (dispatch, getState) => {
         const data = await fetch(
             "https://backend.insjoaquimmir.cat/api/places/" +
-              id +
-              "/reviews/" +
+              id + 
               {
                 headers: {
                   Accept: "application/json",
@@ -90,9 +87,9 @@ export const addPlace = (authToken, formData, id) => {
           if (resposta.success == true) {
             dispatch (setAdd(true));
             // usuari no l'indiquem i per defecta estarà a ""
-            dispatch (getPosts(0,id,authToken))
+            dispatch (getPlaces(0,id,authToken))
             //const state = getState()
-            //dispatch (setReviewsCount(state.reviewsCount - 1));
+            //dispatch (setPlaceCount(state.placeCount - 1));
           }else{
               dispatch(setEffect(resposta.message))
           }

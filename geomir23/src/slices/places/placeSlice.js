@@ -9,15 +9,15 @@ const initialState = {
   postsCount : 0
 }
 
- export const postSlice = createSlice({
-  name: "posts",
+ export const placeSlice = createSlice({
+  name: "places",
   initialState,
   reducers: {
-    startLoadingPosts: (state) => {
+    startLoadingPlaces: (state) => {
       //console.log("ABA")  
       state.isLoading = true;
     },
-    setPosts: (state, action ) => {
+    setPlaces: (state, action ) => {
 
       state.reviews= action.payload
       state.isLoading=false
@@ -31,11 +31,11 @@ const initialState = {
 
         state.error = action.payload
       },
-      setPostsCount: (state,action) => {
+      setPlacesCount: (state,action) => {
         state.postsCount = action.payload
       }
   }
 });
 
-export const { startLoadingPosts,setPosts,setAdd,setError,setPostsCount } = postSlice.actions;
-export default postSlice.reducer
+export const { startLoadingPlaces,setlaces,setAdd,setError,setPlacesCount } = placeSlice.actions;
+export default placeSlice.reducer

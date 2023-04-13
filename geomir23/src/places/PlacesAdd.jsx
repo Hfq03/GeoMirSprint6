@@ -3,19 +3,14 @@ import { useContext } from 'react';
 import { useState } from 'react';
 import { UserContext } from '../userContext';
 import 'leaflet/dist/leaflet.css';
-
 import "../App.css"
 import { Icon } from "leaflet";
-
-
-
 import { Marker, Popup, useMapEvents ,MapContainer, TileLayer, useMap } from 'react-leaflet'
 import { PlacesMenu } from './PlacesMenu';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const PlacesAdd = ({ setAfegir }) => {
-
   
   let { authToken } = useContext(UserContext)
 
@@ -23,9 +18,6 @@ export const PlacesAdd = ({ setAfegir }) => {
   let [ formulari,setFormulari] = useState({});
 
   const navigate= useNavigate();
-
-  
-
   
  useEffect( ()=> {
     
@@ -43,10 +35,7 @@ export const PlacesAdd = ({ setAfegir }) => {
     console.log("Longitude is :", pos.coords.longitude);
   });
 
-
  },[])
-
-
 
   function LocationMarker() {
     
@@ -68,12 +57,9 @@ export const PlacesAdd = ({ setAfegir }) => {
     )
   }
 
-
-
   const handleChange = (e)=> {
 
       e.preventDefault();
-
 
       if (e.target.type && e.target.type==="file")
       {
@@ -110,8 +96,6 @@ export const PlacesAdd = ({ setAfegir }) => {
     formData.append("longitude", longitude);
     formData.append("visibility", visibility);
 
-
-
     console.log("Afegint un Lloc....")
     console.log(formulari)
     console.log(JSON.stringify({ name,description,upload,latitude,longitude,visibility }))
@@ -144,9 +128,7 @@ export const PlacesAdd = ({ setAfegir }) => {
               console.log("S\'ha produit un error")
 
             }
-        } ) 
-
-
+        } )
   }
 
   const tornar = (e) => {
@@ -155,14 +137,10 @@ export const PlacesAdd = ({ setAfegir }) => {
     setAfegir(false);
 
   }
-
-
   return (
     <>
      <div className="py-9 pl-9">
 
-
-    
     {/* <form method="post" action="" enctype="multipart/form-data"> */}
     <div className="py-9 flex flex-col gap-y-2">
         <label className="text-gray-600" htmlFor="Name">Nom</label>
@@ -251,16 +229,7 @@ export const PlacesAdd = ({ setAfegir }) => {
 <button onClick={afegir}  type="submit" className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
     Afegir Entrada
     </button>
-
-    
   </div>
-    
-  
-    
-    
-    
-    
-    
     </div>
     {/* </form> */}
     <MapContainer style={{ height: 280 }} center={{ lat: 51.505, lng: -0.09 }} zoom={13}>
@@ -269,16 +238,8 @@ export const PlacesAdd = ({ setAfegir }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <LocationMarker />
-      
-  
-  
     </MapContainer>
     </div>
-    
-    
-    
-    
-    
     </>
   )
 }

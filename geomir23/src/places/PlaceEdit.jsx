@@ -4,9 +4,8 @@ import { useEffect } from 'react';
 import { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserContext } from '../userContext';
-import { getPlace,handleUpdate } from '../slices/places/thunks';
 
-const PlaceEdit = () => {
+export const PlaceEdit = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
   let [formulari, setFormulari] = useState({});
@@ -288,4 +287,4 @@ const PlaceEdit = () => {
   )
 }
 
-export default PlaceEdit
+// export default PlaceEdit

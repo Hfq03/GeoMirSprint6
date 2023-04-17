@@ -3,11 +3,11 @@ import { useParams } from 'react-router-dom';
 import { UserContext } from '../../userContext';
 import { useNavigate } from "react-router-dom";
 import { useForm } from '../../hooks/useForm';
-import { addReview } from './slices/thunks';
+import { addReview } from '../../slices/reviews/thunks';
 import { useDispatch } from 'react-redux';
 
 import { useSelector } from 'react-redux';
-const ReviewAdd = () => {
+export const ReviewAdd = () => {
    const dispatch = useDispatch();
    let { authToken, setAuthToken,usuari, setUsuari} = useContext(UserContext);
    const { reviews = [], page = 0, isLoading = true, reviewCreada = false, error = "", reviewsCount = 0 } = useSelector((state) => state.reviews);
@@ -32,4 +32,4 @@ return (
 )
 }
 
-export default ReviewAdd
+// export default ReviewAdd

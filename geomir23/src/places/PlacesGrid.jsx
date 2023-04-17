@@ -13,7 +13,7 @@ import Pagina from './Pagina';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPlaces } from '../slices/places/thunks';
 
-const PlacesGrid = () => {
+export const PlacesGrid = () => {
   let { authToken, setAuthToken, usuari, setUsuari } = useContext(UserContext);
   // let [places, setPlaces] = useState([]);
   // const [refresh, setRefresh] = useState(false)
@@ -43,7 +43,7 @@ const PlacesGrid = () => {
   )
 }
 
-export default PlacesGrid
+// export default PlacesGrid
 
 
 /* export const PlacesGrid = () => {

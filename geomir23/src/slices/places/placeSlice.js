@@ -38,14 +38,13 @@ export const placeSlice = createSlice({
             state.error = action.payload
         },
         setPlace: (state,action) => {
-
             state.place = action.payload
         },
         setPlaces: (state,action) => {
             state.places = action.payload
         },
         setFavorite: (state, action) => {
-            state.favorite = action.payload
+            state.favorited = action.payload
         },
         setPage: (state,action) => {
             state.page = action.payload
@@ -59,5 +58,5 @@ export const placeSlice = createSlice({
     }
 });
 
-export const { startLoadingPlaces,setlaces,setAdd,setError,setPlacesCount } = placeSlice.actions;
+export const { startLoadingPlace,setPlaces,setPlace,setAdd,setError,setPlacesCount,setPage,setFilter,setPlaceCount } = placeSlice.actions;
 export default placeSlice.reducer

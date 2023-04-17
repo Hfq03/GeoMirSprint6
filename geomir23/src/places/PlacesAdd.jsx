@@ -4,7 +4,7 @@ import { addPlace } from '../slices/places/thunks';
 import { useSelector,useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 
-const PlacesAdd = () => {
+export const PlacesAdd = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   let [formulari, setFormulari] = useState({});
@@ -112,4 +112,4 @@ const PlacesAdd = () => {
   )
 }
 
-export default PlacesAdd
+// export default PlacesAdd

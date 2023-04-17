@@ -7,7 +7,7 @@ import { UserContext } from "../userContext";
 import { useForm } from "react-hook-form";
 import { useLogin } from '../hooks/useLogin';
 import { useEffect } from 'react';
-const Login = ({ setLogin }) => {
+export const Login = ({ setLogin }) => {
   
   let { authToken, setAuthToken } = useContext(UserContext);
 
@@ -42,4 +42,4 @@ const Login = ({ setLogin }) => {
   )
 }
 
-export default Login
+// export default Login

@@ -7,9 +7,8 @@ import { useDispatch } from 'react-redux';
 import { UserContext } from "../userContext";
 import { useSelector } from 'react-redux';
 
-const PlacesMenu = () => {
-let { usuariId } = useContext(UserContext);
-const { filter } = useSelector((state) => state.places);
+export const PlacesMenu = () => {
+let { usuariId } = useContext(UserContext); 
 
 const dispatch= useDispatch();
    const { formState, onInputChange } = useForm({
@@ -35,7 +34,7 @@ const dispatch= useDispatch();
   )
 }
 
-export default PlacesMenu
+// export default PlacesMenu
 
 
 

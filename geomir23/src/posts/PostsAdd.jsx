@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { UserContext } from "../userContext";
 import { useNavigate } from "react-router-dom";
 
-const PostsAdd = () => {
+export const PostsAdd = () => {
   let navigate = useNavigate();
   let [formulari, setFormulari] = useState({});
   let [error, setError] = useState("");
@@ -119,4 +119,4 @@ const PostsAdd = () => {
   )
 }
 
-export default PostsAdd
+// export default PostsAdd

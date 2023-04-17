@@ -6,7 +6,7 @@ import { UserContext } from "../userContext";
 
 import { useForm } from "react-hook-form"; 
 
-const Register = ({ setLogin }) => {
+export const Register = ({ setLogin }) => {
   let [formulari, setFormulari] = useState({});
    let [error, setError] = useState("");
   let { authToken, setAuthToken } = useContext(UserContext);
@@ -118,4 +118,4 @@ const Register = ({ setLogin }) => {
   )
 }
 
-export default Register
+// export default Register

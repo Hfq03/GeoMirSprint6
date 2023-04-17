@@ -6,7 +6,48 @@ import { UserContext } from '../../userContext';
 import { ReviewsContext } from './reviewsContext';
 import { addReview } from "../../slices/reviews/thunks";
 
-export const ReviewAdd = ({ id }) => {
+
+import { useSelector } from 'react-redux';
+const ReviewAdd = () => {
+  // let { authToken, setAuthToken,usuari, setUsuari ,reviews, setReviews,refresh,setRefresh} = useContext(UserContext);
+  const dispatch = useDispatch();
+  let { authToken, setAuthToken,usuari, setUsuari} = useContext(UserContext);
+  const { reviews = [], page = 0, isLoading = true, reviewCreada = false, error = "", reviewsCount = 0 } = useSelector((state) => state.reviews);
+
+  //  let [formulari, setFormulari] = useState({});
+   const { id } = useParams();
+  // let navigate = useNavigate();
+  // let [error, setError] = useState("");
+
+  const { formState, onInputChange,OnResetForm} = useForm({
+
+    review: "",
+    
+    });
+  const {review} = formState 
+  const formData = new FormData;
+  formData.append("review", review);
+
+return (
+  <div>
+    <label for="review">Review</label>
+    <textarea name="review" value={review} onChange={onInputChange} className="form-control"></textarea>
+    
+    <button className="btn btn-primary" onClick={(e) => {
+      dispatch(addReview(authToken,formData,id));
+    }}>Add Review</button>
+    <button className="btn btn-primary" onClick={OnResetForm}>Reset</button>
+   
+     {error? (<div>{error}</div>):(<></>) }        
+
+    
+  </div>
+)
+}
+
+export default ReviewAdd
+
+/*export const ReviewAdd = ({ id }) => {
 
    let { usuari, setUsuari,authToken,setAuthToken } = useContext(UserContext);
    //const [ review, setReview ] = useState("")
@@ -78,4 +119,4 @@ export const ReviewAdd = ({ id }) => {
 
     </>
   )
-}
+}*/

@@ -66,32 +66,39 @@ export const deletePlace = (place, authToken) => {
 
     };
 };
-export const addPlace = (authToken, formData, id) => {
-    return async (dispatch, getState) => {
-        const data = await fetch(
-            "https://backend.insjoaquimmir.cat/api/places/" +
-              id + 
-              {
-                headers: {
-                  Accept: "application/json",
-                  "Content-Type": "application/json",
-                  Authorization: "Bearer " + authToken,
-                },
-                method: "DELETE",
-                body: formData
-              }
-          );
-          const resposta = await data.json();
-    
-          console.log(resposta);
-          if (resposta.success == true) {
-            dispatch (setAdd(true));
-            // usuari no l'indiquem i per defecta estarà a ""
-            dispatch (getPlaces(0,id,authToken))
-            //const state = getState()
-            //dispatch (setPlaceCount(state.placeCount - 1));
-          }else{
-              dispatch(setEffect(resposta.message))
-          }
+export const addPlace = (authToken, formData, navigate) => {
+  return async (dispatch, getState) => {
+    dispatch(setisSaving(true))
+
+    // dispatch(startLoadingReviews());
+    const headers = {
+        headers: {
+            Accept: "application/json",
+            Authorization: "Bearer " + authToken,
+        },
+        method: "POST",
+        body: formData
     };
+
+    const url = "https://backend.insjoaquimmir.cat/api/places"
+
+    const data = await fetch(url, headers);
+
+    const resposta = await data.json();
+
+    if (resposta.success == true) {
+        console.log("place creado: " + resposta.data)
+        dispatch(setisSaving(false))
+
+        // dispatch(setPlaces(resposta.data));
+        navigate("/places/" + resposta.data.id)
+
+    }
+
+    else {
+        console.log(resposta)
+        dispatch(setError(resposta.message));
+
+    }
+  };
 };

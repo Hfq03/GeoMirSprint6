@@ -1,40 +1,65 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  reviews: [],
-  page: 0,
-  isLoading: false,
-  add: true,
+
+  formulari:[],
+  isSaving: false,
   error: "",
-  postsCount : 0
+  isLoading:false,
+  places:[],
+  place:{ 
+      name: "",
+      description: "",
+      file: { filepath: "" },
+      author: { name: "" },
+      latitude: 0,
+      longitude: 0,
+      visibility:0,
+  },
+  favorite:true,
+  page: 1,
+  pages: [], 
+  filter: { description: "", author: ""},
+  
 }
 
- export const placeSlice = createSlice({
-  name: "places",
-  initialState,
-  reducers: {
-    startLoadingPlaces: (state) => {
-      //console.log("ABA")  
-      state.isLoading = true;
-    },
-    setPlaces: (state, action ) => {
+export const placeSlice = createSlice({
 
-      state.reviews= action.payload
-      state.isLoading=false
-     
-      },
-      setAdd: (state,action) => 
-      {
-        state.add = action.payload
-      },
-      setError: (state,action) => {
+    name: "place",
 
-        state.error = action.payload
-      },
-      setPlacesCount: (state,action) => {
-        state.postsCount = action.payload
-      }
-  }
+    initialState,
+
+    reducers: {
+
+        setisSaving: (state,action) => {
+            state.isSaving = action.payload;
+        },
+        setisLoading: (state, action) => {
+            state.isLoading = action.payload;
+        },
+        setError: (state, action) => {
+            state.error = action.payload
+        },
+        setPlace: (state,action) => {
+
+            state.place = action.payload
+        },
+        setPlaces: (state,action) => {
+            state.places = action.payload
+        },
+        setFavorite: (state, action) => {
+            state.favorite = action.payload
+        },
+        setPage: (state,action) => {
+            state.page = action.payload
+        },
+        setPages: (state,action) => {
+            state.pages = action.payload
+        },
+        setFilter: (state,action) => {
+            state.filter = action.payload
+        }
+    }
 });
 
 export const { startLoadingPlaces,setlaces,setAdd,setError,setPlacesCount } = placeSlice.actions;

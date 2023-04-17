@@ -1,274 +1,122 @@
-import React from "react";
-import { useContext } from "react";
+import React, { useEffect } from 'react'
 import { useState } from "react";
+import { useContext } from "react";
 import { UserContext } from "../userContext";
-import "leaflet/dist/leaflet.css";
-
-import "../App.css";
-import { Icon } from "leaflet";
-
-import {
-  Marker,
-  Popup,
-  useMapEvents,
-  MapContainer,
-  TileLayer,
-  useMap,
-} from "react-leaflet";
-import { PostsMenu } from "./PostsMenu";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const PostsAdd = ({ setAfegir }) => {
-
-  let { authToken } = useContext(UserContext);
-
-  const navigate = useNavigate();
-
-  const [position, setPosition] = useState(null);
+const PostsAdd = () => {
+  let navigate = useNavigate();
   let [formulari, setFormulari] = useState({});
+  let [error, setError] = useState("");
+  let { authToken, setAuthToken } = useContext(UserContext);
+
+  const handleChange = (e) => {
+    if (e.target.type && e.target.type === "file") {
+      setFormulari({
+        ...formulari,
+        [e.target.name]: e.target.files[0]
+      })
+    } else {
+      setFormulari({
+        ...formulari,
+        [e.target.name]: e.target.value
+      })
+    }
+  };
+  const handleReset = (e) => {
+    e.preventDefault()
+    setFormulari({
+      ...formulari,
+      body: "",
+      upload: ""
+    })
+  };
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    let { body, upload, latitude, longitude, visibility = 1} = formulari;
+    const formData = new FormData();
+    formData.append("body", body);
+    formData.append("upload", upload);
+    formData.append("latitude", latitude);
+    formData.append("longitude", longitude);
+    formData.append("visibility", visibility);
+    try {
+      const data = await fetch("https://backend.insjoaquimmir.cat/api/posts", {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + authToken
+        },
+        method: "POST",
+        body: formData
+      });
+      const resposta = await data.json();
+      if (resposta.success === true) {
+        console.log("post creado")
+        navigate("/posts/" + resposta.data.id)
+      } else {
+        console.log(resposta.message)
+        setError(resposta.message);
+      }
+    } catch {
+      console.log("Error");
+      alert("catch");
+    };
+  }
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((pos) => {
       setFormulari({
         ...formulari,
         latitude: pos.coords.latitude,
-        longitude: pos.coords.longitude,
-      });
-
+        longitude: pos.coords.longitude
+      })
       console.log("Latitude is :", pos.coords.latitude);
       console.log("Longitude is :", pos.coords.longitude);
     });
-  }, []);
-
-  function LocationMarker() {
-    const map = useMapEvents({
-      click() {
-        map.locate();
-      },
-      locationfound(e) {
-        setPosition(e.latlng);
-        console.log(e.latlng);
-        map.flyTo(e.latlng, map.getZoom());
-      },
-    });
-
-    return position === null ? null : (
-      <Marker position={position}>
-        <Popup>You are here</Popup>
-      </Marker>
-    );
-  }
-
-  const handleChange = (e) => {
-    e.preventDefault();
-
-    if (e.target.type && e.target.type==="file") {
-      console.log(e.target.files[0].name);
-      setFormulari({
-        ...formulari,
-        [e.target.name]: e.target.files[0],
-      });
-    } else {
-      // Canviem l'element de l'objecte de l'estat
-      setFormulari({
-        ...formulari,
-        [e.target.name]: e.target.value,
-      });
-    }
-  };
-  const afegir = (e) => {
-    e.preventDefault();
-
-    let { name, description, upload, latitude, longitude, visibility } =
-      formulari;
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("upload", upload);
-    formData.append("latitude", latitude);
-    formData.append("longitude", longitude);
-    formData.append("visibility", visibility);
-
-    console.log("Afegint un Lloc....");
-    console.log(formulari);
-    console.log(
-      JSON.stringify({
-        name,
-        description,
-        upload,
-        latitude,
-        longitude,
-        visibility,
-      })
-    );
-    // Enviam dades a l'aPI i recollim resultat
-    fetch("https://backend.insjoaquimmir.cat/api/places", {
-      headers: {
-        Accept: "application/json",
-        //'Content-type': 'multipart/form-data',
-        Authorization: "Bearer " + authToken,
-      },
-      method: "POST",
-      // body: JSON.stringify({ name,description,upload,latitude,longitude,visibility })
-      body: formData,
-    })
-      .then((data) => data.json())
-      .then((resposta) => {
-        console.log(resposta);
-        if (resposta.success == true) {
-          console.log(authToken);
-          setAfegir(false); // Tornem al llistat
-          navigate(-1)
-
-        } else {
-          console.log("S'ha produit un error");
-        }
-      });
-  };
-
-  const tornar = (e) => {
-    e.preventDefault();
-    setAfegir(false);
-  };
-
+  },[])
   return (
-    <>
-      <div className="py-9 pl-9">
-        {/* <form method="post" action="" enctype="multipart/form-data"> */}
-        <div className="py-9 flex flex-col gap-y-2">
-          <label className="text-gray-600" htmlFor="Name">
-            Nom
-          </label>
-          <input
-            type="text"
-            value={formulari.name}
-            name="name"
-            className="w-1/3 px-4 py-2 border border-gray-300 outline-none focus:border-gray-400"
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="w-1/3">
-          <label className="text-gray-600">Descripció</label>
-          <textarea
-            name="description"
-            value={formulari.description}
-            className="
-      w-full
-      h-32
-      px-4
-      py-3
-      border-2 border-gray-300
-      rounded-sm
-      outline-none
-      focus:border-blue-400
-    "
-            placeholder="Explica'ns alguna cosa d'aquest lloc..."
-            onChange={handleChange}
-          ></textarea>
-
-          <div className="flex justify-center">
-            <div className="mb-3 w-96">
-              <label
-                htmlFor="formFile"
-                className="form-label inline-block mb-2 text-gray-600"
-              >
-                Imatge PNG, JPG or GIF (MAX. 800x400px)
-              </label>
-              <input
-                name="upload"
-                value={formulari.upload}
-                onChange={handleChange}
-                className="form-control
-    block
-    w-full
-    px-3
-    py-1.5
-    text-base
-    font-normal
-    text-gray-700
-    bg-white bg-clip-padding
-    border border-solid border-gray-300
-    rounded
-    transition
-    ease-in-out
-    m-0
-    focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                type="file"
-                id="upload"
-              />
-            </div>
+    <div>
+      <div className="card ">
+        <div className="card-header ">
+          <h1 className="text-center h2 fw-bold">Crear Post</h1>
+        </div >
+        <form method="post" className="separar " action="{{ route('posts.store') }}" enctype="multipart/form-data">
+          <div className="form-group">
+            <label for="body">Body</label>
+            <input type="text" value={formulari.body} onChange={handleChange} name="body" className="form-control" />
           </div>
-
-          <span className="flex flex-col gap-y-2">
-            <label className="text-gray-600" htmlFor="Name">
-              Longitud
-            </label>
-            <input
-              type="text"
-              name="longitude"
-              value={formulari.longitude}
-              onChange={handleChange}
-              className="w-1/3 px-4 py-2 border border-gray-300 outline-none focus:border-gray-400"
-            />
-          </span>
-          <span className="flex flex-col gap-y-2">
-            <label className="text-gray-600" htmlFor="Name">
-              Latitud
-            </label>
-            <input
-              type="text"
-              name="latitude"
-              value={formulari.latitude}
-              onChange={handleChange}
-              className="w-1/3 px-4 py-2 border border-gray-300 outline-none focus:border-gray-400"
-            />
-          </span>
-
-          <label
-            htmlFor="visibility"
-            className="block mb-2 text-sm text-gray-600 dark:text-white"
-          >
-            Selecciona la visibilitat
-          </label>
-          <select
-            value={formulari.visibility}
-            name="visibility"
-            id="visibility"
-            onChange={handleChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            <option defaultValue value="">
-              ----
-            </option>
-            <option value="1">Public</option>
-            <option value="2">Contactes</option>
-            <option value="3">Privat</option>
-          </select>
-          <div className="py-9">
-            <button
-              onClick={afegir}
-              type="submit"
-              className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-            >
-              Afegir Entrada
-            </button>
+          <div className="form-group">
+            <label for="upload">File</label>
+            <input type="file" value={formulari.file} onChange={handleChange} name="upload" className="form-control" />
           </div>
-        </div>
-        {/* </form> */}
-        <MapContainer
-          style={{ height: 280 }}
-          center={{ lat: 51.505, lng: -0.09 }}
-          zoom={13}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <LocationMarker />
-        </MapContainer>
+          <div className="form-group">
+            <label for="latitude">Latitude</label>
+            <input value={formulari.latitude} onChange={handleChange} name="latitude" className="form-control" />
+          </div>
+          <div className="form-group">
+            <label for="longitude">Longitude</label>
+            <input value={formulari.longitude} onChange={handleChange} name="longitude" className="form-control" />
+          </div>
+          <div className="form-group">
+            <label for="visibility">Visibility</label>
+            <select name="visibility" value={formulari.visibility} onChange={handleChange} className="form-control"  >
+              <option value="1" selected>public</option>
+              <option value="2">contacts</option>
+              <option value="3">private</option>
+            </select>
+
+          </div>
+          <button className="btn btn-primary" onClick={(e) => {
+            handleCreate(e);
+          }}>Create</button>
+          <button className="btn btn-secondary" onClick={(e) => {
+            handleReset(e)
+          }}>Reset</button>
+          {error ? (<div>{error}</div>) : (<></>)}
+        </form>
       </div>
-    </>
-  );
-};
+    </div>
+  )
+}
+
+export default PostsAdd

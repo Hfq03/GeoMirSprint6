@@ -1,20 +1,19 @@
 import React from "react";
 import { useState } from "react";
 import { useContext } from "react";
-import { useForm } from "../../hooks/useForm";
 import { UserContext } from "../../userContext";
 import { CommentsContext } from "./commentsContext";
+import { useForm } from "../../hooks/useForm";
 
 export const CommentAdd = ({ id }) => {
   let { usuari, setUsuari, authToken, setAuthToken } = useContext(UserContext);
-  //const [comment, setComment] = useState("");
-
-  const {formState, onInputChange, onResetForm } = useForm({ comment: "" })
-  const { comment } = formState
-
-
   let { setAdd, setRefresca, commentsCount, setCommentsCount } =
     useContext(CommentsContext);
+
+  const { formState, onInputChange, OnResetForm } = useForm({
+    comment: ""
+  });
+  const { comment } = formState
 
   const addComment = async () => {
     let data = await fetch(
@@ -23,11 +22,9 @@ export const CommentAdd = ({ id }) => {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          //'Content-type': 'multipart/form-data',
           Authorization: "Bearer " + authToken,
         },
         method: "POST",
-        // body: JSON.stringify({ name,description,upload,latitude,longitude,visibility })
         body: JSON.stringify({ comment }),
       }
     );
@@ -35,7 +32,6 @@ export const CommentAdd = ({ id }) => {
     console.log(resposta);
     if (resposta.success == true) {
       console.log("Todo bien");
-      //setComment("");
       setRefresca(true);
       setCommentsCount(commentsCount + 1);
     } else {
@@ -61,22 +57,6 @@ export const CommentAdd = ({ id }) => {
               ></textarea>
             </div>
             <div class="w-full md:w-full flex items-start md:w-full px-3">
-              <div class="flex items-start w-1/2 text-gray-700 px-2 mr-auto">
-                <svg
-                  fill="none"
-                  class="w-5 h-5 text-gray-600 mr-1"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p class="text-xs md:text-sm pt-px">Some HTML is okay.</p>
-              </div>
               <div class="-mr-1">
                 <input
                   onClick={addComment}
@@ -84,11 +64,14 @@ export const CommentAdd = ({ id }) => {
                   class="bg-white text-gray-700 font-medium py-1 px-4 border border-gray-400 rounded-lg tracking-wide mr-1 hover:bg-gray-100"
                   value="Post Comment"
                 />
-                 <input
-                  onClick={onResetForm}
+              </div>
+              <br></br>
+              <div class="-mr-1">
+                <input
+                  onClick={OnResetForm}
                   type="button"
                   class="bg-white text-gray-700 font-medium py-1 px-4 border border-gray-400 rounded-lg tracking-wide mr-1 hover:bg-gray-100"
-                  value="Reset"
+                  value="Reset Comment"
                 />
               </div>
             </div>

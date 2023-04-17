@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserContext } from '../userContext';
-import { useNavigate } from 'react-router';
 import { getPlace,handleUpdate } from '../slices/places/thunks';
 
 const PlaceEdit = () => {

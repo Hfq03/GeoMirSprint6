@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useContext } from "react";
 import { UserContext } from "../userContext";
 import editar from "../assets/editar.png";
 import esborrar from "../assets/esborrar.png";
@@ -8,7 +7,6 @@ import esborrar from "../assets/esborrar.png";
 //import places from '../../json/places.json'
 //import users from '../../json/users.json'
 import { PlacesAdd } from "./PlacesAdd";
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { PlaceGrid } from "./PlaceGrid";
 import Pagina from './Pagina';

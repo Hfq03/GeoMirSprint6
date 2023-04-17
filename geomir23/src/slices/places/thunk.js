@@ -38,32 +38,76 @@ export const getPlaces = (page = 0, id, authToken, usuari="") => {
 
 export const deletePlace = (place, authToken) => {
     return async (dispatch, getState) => {
+        let url = "";
+        const filter = getState().places.filter;
+        console.log("entra: "+filter.description,filter.author)
 
+        dispatch(setisLoading(true));
+        if (filter.description == ""&&filter.author == "") {
+            url =
+                page > 0
 
-        const data = await fetch(
-            "https://backend.insjoaquimmir.cat/api/places/" +
-              place.id +
-              {
-                headers: {
-                  Accept: "application/json",
-                  "Content-Type": "application/json",
-                  Authorization: "Bearer " + authToken,
-                },
-                method: "DELETE",
-              }
-          );
-          const resposta = await data.json();
-    
-          console.log(resposta);
-          if (resposta.success == true) {
-            dispatch (setAdd(true));
-            // usuari no l'indiquem i per defecta estarà a ""
-            dispatch (getPlaces(0,place.id,authToken))
-            const state = getState()
-            dispatch (setPlaceCount(state.placeCount - 1));
-          }
+                    ? "https://backend.insjoaquimmir.cat/api/places?pagina=1&page=" + page
 
+                    : "https://backend.insjoaquimmir.cat/api/places";
+        }else if (!filter.author == ""&&filter.description == ""){
+            url =
 
+                page > 0
+
+                    ? "https://backend.insjoaquimmir.cat/api/places?pagina=1&page=" + page + "&author=" + filter.author
+
+                    : "https://backend.insjoaquimmir.cat/api/places?author=" + filter.author;
+        } else if (!filter.author == ""&&!filter.description == ""){
+            console.log("entra al bueno")
+            url =
+
+            page > 0
+
+                ? "https://backend.insjoaquimmir.cat/api/places?pagina=1&page=" + page + "&description=" + filter.description+"&author="+ filter.author
+
+                : "https://backend.insjoaquimmir.cat/api/places?description=" + filter.description+"&author=" + filter.author;;
+        }
+        else if (filter.author == ""&&!filter.description == ""){
+            url =
+
+                page > 0
+
+                    ? "https://backend.insjoaquimmir.cat/api/places?pagina=1&page=" + page + "&description=" + filter.description
+
+                    : "https://backend.insjoaquimmir.cat/api/places?description=" + filter.description;
+        }
+
+        const headers = {
+            headers: {
+                Accept: "application/json",
+                Authorization: "Bearer " + authToken,
+            },
+            method: "GET",
+        };
+        // const url = "https://backend.insjoaquimmir.cat/api/places"
+        const data = await fetch(url, headers);
+        const resposta = await data.json();
+        if (resposta.success == true) {
+            if (page > 0) {
+                dispatch(setPlaces(resposta.data.collection));
+
+                dispatch(setPages(resposta.data.links));
+
+                console.log(resposta.data.links);
+
+            } else {
+
+                dispatch(setPlaces(resposta.data));
+
+            }
+            dispatch(setisLoading(false));
+            // dispatch(setPlaces(resposta.data));
+            console.log(resposta.data)
+        }
+        else {
+            dispatch(setError(resposta.message));
+        }
     };
 };
 export const addPlace = (authToken, formData, navigate) => {

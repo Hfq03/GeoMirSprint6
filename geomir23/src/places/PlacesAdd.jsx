@@ -7,6 +7,7 @@ import "../App.css"
 import { Icon } from "leaflet";
 import { Marker, Popup, useMapEvents ,MapContainer, TileLayer, useMap } from 'react-leaflet'
 import { PlacesMenu } from './PlacesMenu';
+import { addPlace } from '../slices/places/thunks';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -226,9 +227,12 @@ export const PlacesAdd = ({ setAfegir }) => {
   
 </select>
 <div className="py-9">
-<button onClick={afegir}  type="submit" className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-    Afegir Entrada
-    </button>
+  <>
+    <button className="btn btn-primary" onClick={(e) => {
+      e.preventDefault();
+      dispatch(addPlace(formData, authToken, navigate,dispatch));
+    }}>Create</button>
+  </>
   </div>
     </div>
     {/* </form> */}

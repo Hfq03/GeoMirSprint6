@@ -2,26 +2,23 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
 
-  formulari:[],
-  isSaving: false,
-  error: "",
-  isLoading:false,
-  places:[],
-  place:{ 
-      name: "",
-      description: "",
-      file: { filepath: "" },
-      author: { name: "" },
-      latitude: 0,
-      longitude: 0,
-      visibility:0,
-  },
-  favorite:true,
-  page: 1,
-  pages: [], 
-  filter: { description: "", author: ""},
-  
-}
+    places: [],
+    place: {
+    name: "",
+    description: "",
+    file: { filepath: "" },
+    author: { name: "" },
+    latitude: 0,
+    longitude: 0,
+    visibility:0,
+    },
+    favorites_count: 0,
+    favorited: true,
+    page: 0,
+    isLoading: false,
+    error: "",
+    info: "",    
+};
 
 export const placeSlice = createSlice({
 

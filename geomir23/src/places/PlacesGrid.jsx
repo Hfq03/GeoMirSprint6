@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useContext } from "react";
 import { UserContext } from "../userContext";
 import editar from "../assets/editar.png";
@@ -11,9 +11,44 @@ import { PlacesAdd } from "./PlacesAdd";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { PlaceGrid } from "./PlaceGrid";
-import { useFetch } from "../hooks/useFetch";
+import Pagina from './Pagina';
+import { useDispatch, useSelector } from 'react-redux';
+import { getPlaces } from '../slices/places/thunks';
 
-export const PlacesGrid = () => {
+const PlacesGrid = () => {
+  let { authToken, setAuthToken, usuari, setUsuari } = useContext(UserContext);
+  // let [places, setPlaces] = useState([]);
+  // const [refresh, setRefresh] = useState(false)
+  const dispatch = useDispatch();
+  const { isSaving = true, isLoading,places, favorite,page ,filter} = useSelector((state) => state.places);
+  useEffect(() => {
+    dispatch(getPlaces(authToken,page))
+  }, [page,filter]);
+  console.log(places)
+
+  return (
+    <div>
+      <h1>Places Grid</h1>
+      {isLoading ?
+        "Loading..." :
+        (places).map((place) => (
+          <tr key={place.id}>
+            {usuari == place.author.email || place.visibility.name == 'public' ?
+
+              <PlaceGrid place={place} />
+              : <></>}
+          </tr>
+        ))}
+       <Pagina />
+
+    </div>
+  )
+}
+
+export default PlacesGrid
+
+
+/* export const PlacesGrid = () => {
   // desa el retorn de dades de l'api places
   // let [places, setPlaces] = useState([]);
   // Ho utilitzem per provar un refresc quan esborrem un element
@@ -38,8 +73,8 @@ export const PlacesGrid = () => {
               Llistat de Llocs
             </span>
             {/* <h2 className="text-2xl text-cyan-900 font-bold md:text-4xl">Sharing is Caring</h2>
-        <p className="lg:w-6/12 lg:mx-auto">Quam hic dolore cumque voluptate rerum beatae et quae, tempore sunt, debitis dolorum officia aliquid explicabo? Excepturi, voluptate?</p> */}
-          </div>
+        <p className="lg:w-6/12 lg:mx-auto">Quam hic dolore cumque voluptate rerum beatae et quae, tempore sunt, debitis dolorum officia aliquid explicabo? Excepturi, voluptate?</p> }*/
+          /*</div>
 
           <div className="grid gap-12 lg:grid-cols-2">
             {data.map((v, i) => {
@@ -57,10 +92,10 @@ export const PlacesGrid = () => {
               <a href="www.tailus.io" className="block w-max text-cyan-600">Read more</a>
             </div>
           </div>
-        </div> */}
+        </div> }
           </div>
         </div>
       </div>
     </>
   );
-};
+};*/

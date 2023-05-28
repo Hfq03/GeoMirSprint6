@@ -1,62 +1,39 @@
-import React from "react";
-import { useContext } from "react";
+import React from 'react';
 import { UserContext } from "../../userContext";
-import { ReviewsContext } from "./reviewsContext";
-
-import TimeAgo from "react-timeago";
-import catStrings from "react-timeago/lib/language-strings/ca";
-import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
+import { useContext } from "react";
+import TimeAgo from 'react-timeago';
 import { useDispatch, useSelector } from "react-redux";
-import { delReview } from "../../slices/reviews/thunks";
+import spanishStrings from 'react-timeago/lib/language-strings/es';
+import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
+import { delReview } from "../../slices/places/reviews/thunks";
 
 export const Review = ({ review }) => {
- const { usuari, email,setUsuari, authToken, setAuthToken } = useContext(UserContext);
- const { reviews = [], page=0, isLoading=true, add=true, error="", reviewsCount=0 } = useSelector((state) => state.reviews);
- const dispatch = useDispatch();
-
-  const formatter = buildFormatter(catStrings);
-
-  
-
-  return (
-    <div class="px-10">
-      <div class="bg-white max-w-xl rounded-2xl px-10 py-8  hover:shadow-2xl transition duration-500">
-        <div class="mt-4">
-          <h1 class="text-lg text-gray-700 font-semibold hover:underline cursor-pointer">
-            Review de {review.user.name}
-          </h1>
-        
-          <p class="mt-4 text-md text-gray-600">{review.review}</p>
-          <div class="flex justify-between items-center">
-            <div class="mt-4 flex items-center space-x-4 py-6">
-              <div class="text-sm font-semibold">
-                <span class="font-normal">
-                  <TimeAgo
-                    date={review.created_at}
-                    formatter={formatter}
-                  ></TimeAgo>{" "}
-                </span>
-              </div>
+    const { usuari,setUsuari, authToken, setAuthToken } = useContext(UserContext);
+    const { reviews = [], page=0, isLoading=true, add=true, error="", reviewsCount=0 } =
+    useSelector((state) => state.reviews);
+    const dispatch = useDispatch();
+    const formatter = buildFormatter(spanishStrings);
+    return(
+        <>
+            <div>
+                <div>
+                    <img src="https://hope.be/wp-content/uploads/2015/05/no-user-image.gif" alt="" />
+                </div>
+                <div>
+                    <div>
+                        <h6>{review.user.name}</h6>
+                        <span><TimeAgo date={review.created_at} formatter={formatter} /></span>
+                        {usuari == review.user.email &&
+                            <button onClick={(e) => {dispatch(delReview(review,authToken));}} title="Eliminar" type="submit"><i className="bi bi-trash3"></i></button>
+                        }
+                    </div>
+                    <div>
+                        {review.review}
+                    </div>
+                </div>
             </div>
-            {review.user.email === email ? (
-              <>
-                <button
-                  onClick={(e) => dispatch( delReview(review,authToken))}
-                  type="button"
-                  class="inline-block px-6 py-2 border-2 border-red-600 text-red-600 font-medium text-xs leading-tight uppercase rounded-full hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
-                >
-                  Esborrar
-                </button>
+        </>
+    )
+}
 
-                {/* <a href="#" className=" w-max text-cyan-600" onClick={ (e)=> deletePlace(review.id,e) }> Esborrar</a> */}
-              </>
-            ) : (
-              <></>
-            )}
-            {/* <div class="p-6 bg-yellow-400 rounded-full h-4 w-4 flex items-center justify-center text-2xl text-white mt-4 shadow-lg cursor-pointer">+</div> */}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+export default Review

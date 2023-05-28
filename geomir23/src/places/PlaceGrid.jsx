@@ -1,78 +1,39 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { useContext } from 'react';
-import { UserContext } from '../userContext';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { UserContext } from "../userContext";
+import { useContext } from "react";
+import { delPlace } from "../slices/places/thunks";
+import { useDispatch } from "react-redux";
 
-export const PlaceGrid = ({v, reRender} ) => {
+export const PlaceGrid = ({place}) => {    
+    let { authToken, setAuthToken, usuari, setUsuari } = useContext(UserContext);
+    const dispatch = useDispatch();
 
-  let { usuari, setUsuari,authToken,setAuthToken } = useContext(UserContext)
-
-  //console.log(v)
-
-
-  const deletePlace = (id,e) => {
-
-    e.preventDefault();
-  
-    let confirma = confirm("Estas  segur?")
-  
-    if (confirma)
-    {
-      fetch ("https://backend.insjoaquimmir.cat/api/places/"+id,{
-      
-          headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + authToken
-          },
-          method: "DELETE",
-         
-      }
-      ).then( data => data.json() )
-      .then (resposta => { 
-          
-              console.log(resposta); 
-              if (resposta.success == true )
-              {
-                  console.log("ok")
-                  // provoca el refrescat del component i la reexecució de useEffect
-                  reRender();
-                  
-              }
-          } ) 
-  
-  
-  
-    }
-  
-  
-  }
-  return (
-    <div key={v.id } className="p-1 rounded-xl group sm:flex space-x-6 bg-white bg-opacity-50 shadow-xl hover:rounded-2xl">
-          <img src={ "https://backend.insjoaquimmir.cat/storage/" + v.file.filepath } alt="art cover" loading="lazy" width="1000" height="667" className="h-56 sm:h-full w-full sm:w-5/12 object-cover object-top rounded-lg transition duration-500 group-hover:rounded-xl"/>
-          <div className="sm:w-7/12 pl-0 p-5">
-            <div className="space-y-2">
-              <div className="space-y-4">
-                <h4 className="text-2xl font-semibold text-cyan-900">{v.name}</h4>
-                <p className="text-gray-600">{v.description}</p>
-                <p className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                ❤️ { v.favorites_count }
-              </p>
-              
-              </div>
-              <Link to={"/places/"+v.id} className="w-max text-cyan-600"> Llegeix més </Link>
-              { v.author.email === usuari ? 
-              (   <>
-                  <Link to={"/places/edit/"+v.id} className="w-max text-cyan-600"> Editar </Link>
-                  <a href="#" className=" w-max text-cyan-600" onClick={ (e)=> deletePlace(v.id,e) }> Esborrar</a>
-                   </> 
-              ) : ( <></> )}
+    return(
+        <>
+            <div>
+                <div>
+                    {usuari == place.author.email &&
+                    <div>
+                        <Link to={"/places/edit/"+place.id} title="Editar"><i className="bi bi-pencil-square"></i></Link> 
+                        <button onClick={(e) => {dispatch(delPlace(place.id, authToken));}} title="Eliminar" type="submit"><i className="bi bi-trash3"></i></button>
+                    </div>}
+                </div>
+                <div>
+                    <h5>{ place.name }</h5>
+                </div>
             </div>
-            
-          </div>
-          <span className="text-sm text-gray-900 font-light px-0 py-1 whitespace-nowrap">
-              
-              </span>
-        </div>
-  )
+            <div>
+                <Link to={"/places/"+place.id} title="Veure"><img src={"https://backend.insjoaquimmir.cat/storage/" + place.file.filepath} alt={place.name}/></Link>
+            </div>
+            <div>
+                <p>{ place.favorites_count } favs</p>
+                <p>{ place.description }</p>
+            </div>
+            <br/>
+            <br/>
+        </>
+    )
 }
+
+export default PlaceGrid

@@ -1,15 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit'
-import placeMarkSlice from './slices/placeMarkSlice'
-import postMarkSlice from './slices/postMarkSlice'
-import todosSlice from './slices/todosSlice'
-import reviewSlice from './slices/reviews/reviewSlice'
 
+import { configureStore } from '@reduxjs/toolkit'
+import placeMarkReducer from './slices/places/placeMarkSlice'
+import todosReducer  from './slices/todoSlice'
+import reviewReducer  from './slices/places/reviews/reviewSlice'
+import placeReducer  from './slices/places/placeSlice'
 export const store = configureStore({
   reducer: {
-    todos: todosSlice,
-    placeMarks: placeMarkSlice,
-    postMarks: postMarkSlice,
-    reviews: reviewSlice,
-    
-  }
+    todos: todosReducer,
+    marks: placeMarkReducer,
+    reviews: reviewReducer,
+    places: placeReducer,
+  },
 })

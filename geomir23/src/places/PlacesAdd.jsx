@@ -1,115 +1,116 @@
-import React, { useEffect,useState,useContext } from 'react'
-import { UserContext } from "../userContext";
-import { addPlace } from '../slices/places/thunks';
-import { useSelector,useDispatch } from 'react-redux';
+import React, { useEffect, useState, useContext } from 'react';
+import { UserContext } from '../userContext';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { addPlace } from "../slices/places/thunks";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-export const PlacesAdd = () => {
-  const dispatch = useDispatch();
-  let navigate = useNavigate();
-  let [formulari, setFormulari] = useState({});
-  const { isSaving = true, error = "" } = useSelector((state) => state.places);
-
+export default function PlacesAdd() {
   let { authToken, setAuthToken } = useContext(UserContext);
+  const { error="", success="" } = useSelector((state) => state.places);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors }, setValue, setError } = useForm();
+  const onSubmit = data => dispatch(sendPlace(data));
 
-  let { name, description, upload, latitude, longitude, visibility = 1 } = formulari;
-  const formData = new FormData;
-  formData.append("name", name);
-  formData.append("description", description);
-  formData.append("upload", upload);
-  formData.append("latitude", latitude);
-  formData.append("longitude", longitude);
-  formData.append("visibility", visibility);
-
-  const handleChange = (e) => {
-    e.preventDefault();
-    if (e.target.type && e.target.type === "file") {
-      setFormulari({
-        ...formulari,
-        [e.target.name]: e.target.files[0]
-      })
-    } else {
-      setFormulari({
-        ...formulari,
-        [e.target.name]: e.target.value
-      })
+  const sendPlace = async (data) => {
+    const file = data.upload[0];
+    const tiposArchivos = ["image/gif", "image/jpg", "image/png", "image/jpeg", "video/mp4"];
+    if (! tiposArchivos.includes(file.type)) {
+      setError('upload', {type: 'filetype', message:"Tipo de archivo incorrecto, solo acepta GIF, JPG, PNG, JPEG y MP4"})
+    }else if(file.size > 2048000){
+      setError('upload', {type: 'filesize', message:"El archivo no puede pesar mas de 2048KB"})
+    }else{
+      const data2 = { ...data, upload: data.upload[0]}
+      dispatch(addPlace(data2, authToken, navigate));
     }
-  };
-  const handleReset = (e) => {
-    e.preventDefault()
-    setFormulari({
-      ...formulari,
-      name: "",
-      description: "",
-      upload: ""
-    })
-  };
-  
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      setFormulari({
-        ...formulari,
-        latitude: pos.coords.latitude,
-        longitude: pos.coords.longitude
+  }
 
-      })
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition( (pos)=> {
+      setValue('latitude', pos.coords.latitude)
+      setValue('longitude', pos.coords.longitude)
       console.log("Latitude is :", pos.coords.latitude);
       console.log("Longitude is :", pos.coords.longitude);
     });
-  }, []);
+  }, [])
 
-  return (
-    <div>
-      <div className="card ">
-        <div className="card-header ">
-          <h1 className="text-center h2 fw-bold">Crear sitio</h1>
-        </div >
-        <form method="post" className="separar" enctype="multipart/form-data">
-          <div className="form-group">
-            <label for="name">Name</label>
-            <input type="text" value={formulari.name} onChange={handleChange} name="name" className="form-control" />
-          </div>
-          <div className="form-group">
-            <label for="description">Description</label>
-            <textarea name="description" value={formulari.description} onChange={handleChange} className="form-control"></textarea>
-          </div>
-          <div className="form-group">
-            <label for="upload">File</label>
-            <input type="file" value={formulari.file} onChange={handleChange} name="upload" className="form-control" />
-          </div>
-          <div className="form-group">
-            <label for="latitude">Latitude</label>
-            <input value={formulari.latitude} onChange={handleChange} name="latitude" className="form-control" />
-          </div>
-          <div className="form-group">
-            <label for="longitude">Longitude</label>
-            <input value={formulari.longitude} onChange={handleChange} name="longitude" className="form-control" />
-          </div>
-          <div className="form-group">
-            <label for="visibility">Visibility</label>
-            <select name="visibility" value={formulari.visibility} onChange={handleChange} className="form-control"  >
-              <option value="1" selected>public</option>
-              <option value="2">contacts</option>
-              <option value="3">private</option>
-            </select>
-          </div>
-          {isSaving?
-            <>
-            </>:
-            <>
-             <button className="btn btn-primary" onClick={(e) => {
-                e.preventDefault();
-                dispatch(addPlace(formData, authToken, navigate,dispatch));
-              }}>Create</button>
-            </>
-          }
-          <button className="btn btn-secondary" onClick={(e) => {
-            handleReset(e)
-          }}>Reset</button>
-          {error ? (<div>{error}</div>) : (<></>)}        </form>
-      </div>
-    </div>
-  )
-}
-
-// export default PlacesAdd
+  return <div>
+            {success ? <div>{success}</div> : <></>}
+            <h1>PlaceAdd</h1>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div>
+                <input {...register("name", {
+                    required: "Este campo es obligatorio",
+                    minLength: {
+                      value: 4,
+                      message: "El Nombre tiene que contener mínimo 4 caracteres"
+                    },
+                    maxLength: {
+                      value: 255,
+                      message: "El Nombre no puede contener más de 255 caracteres"
+                    }})} type="text" placeholder=" " id="name"/>
+                <label htmlFor="name">Nombre</label>
+                <div></div>
+                <p>Nombre no válido</p>
+              </div>
+              {errors.name ? <div >{errors.name.message}</div> : <></>}
+              <div>
+                <input {...register("description", {
+                    required: "Este campo es obligatorio",
+                    minLength: {
+                      value: 4,
+                      message: "La descripción tiene que contener mínimo 4 caracteres"
+                    },
+                    maxLength: {
+                      value: 255,
+                      message: "La descripción no puede contener más de 255 caracteres"
+                    }})} type="text" placeholder=" " id="description"/>
+                <label htmlFor="description">Descripción</label>
+                <div></div>
+                <p>Descripción no válido</p>
+              </div>
+              {errors.description ? <div>{errors.description.message}</div> : <></>}
+              <div>
+                <input {...register("upload", {required: "Este campo es obligatorio",})} type="file" placeholder=" " id="upload"/>
+                <label htmlFor="upload">Archivo</label>
+                <div></div>
+                <p>Archivo no válida</p>
+              </div>
+              {errors.upload ? <div>{errors.upload.message}</div> : <></>}
+              <div>
+                <input {...register("latitude", {required: "Este campo es obligatorio",})} type="number" placeholder=" " id="latitude" step={"any"}/>
+                <label htmlFor="latitude">Latitud</label>
+                <div></div>
+                <p>Latitud no válida</p>
+              </div>
+              {errors.latitude ? <div>{errors.latitude.message}</div> : <></>}
+              <div>
+                <input {...register("longitude", {required: "Este campo es obligatorio",})} type="number" placeholder=" " id="longitude" step={"any"}/>
+                <label htmlFor="longitude">Longitud</label>
+                <div></div>
+                <p>Longitud no válido</p>
+              </div>
+              {errors.longitude ? <div>{errors.longitude.message}</div> : <></>}
+              <div>
+                <select {...register("visibility", {required: "Este campo es obligatorio",})} step={"any"} id="visibility">
+                  <option value="1" >Public</option>
+                  <option value="3" >Private</option>
+                  <option value="2" >Contacts</option>
+                </select>
+                <label htmlFor="visibility">Visibilidad</label>
+                
+                <div></div>
+                <p>Visibilidad no válida</p>
+              </div>
+              {errors.visibility ? <div>{errors.visibility.message}</div> : <></>}
+              {error ? <div>{error}</div> : <></>}
+              <div>
+                <button className='boton' type="submit">Crear place</button>
+                <button className='boton' type='reset'>Reiniciar</button>
+                <Link className='boton' to={"/places"}>Volver</Link>
+              </div>
+            </form>
+          </div>;
+  }
